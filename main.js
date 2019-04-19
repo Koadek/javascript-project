@@ -28,7 +28,36 @@ let board = []; // The board holds all the game entities. It is a 2D array.
 
 const items = []; // Array of item objects. These will be used to clone new items with the appropriate properties.
 
-const player = {}; // The player object
+const player = {
+  name: '',
+  level: 1,
+  items: [],
+  skills: ['confuse'],
+  attack: /*player.level * */ 10,
+  speed: 4000 /* / player.level*/,
+  hp: 100,
+  gold: 0,
+  exp: 0,
+  type: 'player',
+  getMaxHp: function() {
+    let maxHP = this.level * 100;
+    if (this.hp > maxHP) {
+      this.hp = maxHP;
+    }
+  },
+  levelUp: function() {
+    if (this.exp >= this.getExpToLevel) {
+      this.exp = this.exp - this.getExpToLevel;
+      this.level += 1;
+      if (this.level === 3) {
+        player.skills.push('steal');
+      }
+    }
+  },
+  getExpToLevel: function() {
+    return this.level * 20;
+  },
+}; // The player object
 
 // Utility function to print messages with different colors. Usage: print('hello', 'red');
 function print(arg, color) {
@@ -38,10 +67,16 @@ function print(arg, color) {
 
 // Prints a blue string with the indicated number of dashes on each side of the string. Usage: printSectionTitle('hi', 1) // -hi-
 // We set a default value for the count to be 20 (i.e. 20 dashes '-')
-function printSectionTitle(title, count = 20) {}
+function printSectionTitle(title, count = 20) {
+  let dashes = '-';
+  print(dashes.repeat(count) + title + dashes.repeat(count), 'blue');
+}
 
 // Sets the name property for the player and prints a message to notice the user of the change
-function setName(name) {}
+function setName(name) {
+  player.name = name;
+  print('player name set to ' + name);
+}
 
 // Returns a new object with the same keys and values as the input object
 function clone(entity) {}
@@ -97,7 +132,9 @@ function move(direction) {}
 
 function setupPlayer() {
   printSectionTitle('SETUP PLAYER');
-  print("Please enter your name using the setName function. Usage: setName('Bob')");
+  print(
+    "Please enter your name using the setName function. Usage: setName('Bob')"
+  );
   print("Once you're done, go to the next step with next()");
 }
 
@@ -113,7 +150,9 @@ function setupBoard() {
 function startGame() {
   printSectionTitle('START GAME');
   print('Hello ' + player.name);
-  print("You are ready to start your adventure. Use move('U' | 'D' | 'L' | 'R') to get going.");
+  print(
+    "You are ready to start your adventure. Use move('U' | 'D' | 'L' | 'R') to get going."
+  );
   printBoard();
 }
 
