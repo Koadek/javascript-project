@@ -2,10 +2,11 @@
 
 The goal of this project is to create a console based game in which you are an adventurer on a board game.  
 The adventurer can move in 4 directions (Up, Down, Left, Right) and interact with different entities (Monster, Tradesman, Item, Dungeon).
-![exibit](exibita.png)
-![exibit](exibitb.png)
-![exibit](exibitc.png)
-![exibit](exibitd.png)
+![preview](images/preview.png)
+
+# Resources
+
+Be sure to check the images for more information on the different features of the game
 
 # Game rules
 
@@ -31,20 +32,22 @@ A position object has 2 properties:
 
 ### Player
 
-The player has the following properties (parentheses has type and initial value)
+The player has the following properties (parentheses has type)
 
 - name (string)
-- level (number - 1)
-- items (array of objects - [])
-- skills (array of objects - [])
-- attack (number - 10)
-- speed (number - 2000)
-- hp (number - 100)
+- level (number)
+- items (array of objects)
+- skills (array of objects - will have 2 skill objects: confuse and steal)
+- attack (number)
+- speed (number)
+- hp (number)
 - gold (number - 0 to start. Can get gold by selling items to the tradesman)
 - exp (number - 0 to start. Experience points, increase when slaying monsters)
 - type (string - 'player')
 - position (object - can be left out and set when needed)
-- levelUp (a method to update the level and the different properties affected by a level change. Level up happens when exp >= [player level * 10])
+- getMaxHp (function - a method that returns max hp. Value is level \* 100, e.g. level 2 -> 200 max hp)
+- levelUp (function - a method to update the level and the different properties affected by a level change. Level up happens when exp >= [player level * 20])
+- getExpToLevel (function - a method returning exp required to level. Value is level \* 20, e.g. level 2 -> 40exp required)
 
 When leveling up, exp must be decreased by the amount used to level up, e.g. exp required to level up = 100. current exp = 120  
 -> levelUp is called, incrementing by 1 the level and updating exp to exp = 120 - 100 = 20
@@ -54,7 +57,7 @@ When leveling up, exp must be decreased by the amount used to level up, e.g. exp
 The level of the player impacts certain properties of the player.
 
 - hp: max is level \* 100 (e.g. level 1 -> max is 100hp)
-- speed: 4000 / level (as level increases, speed gets smaller and thus faster. Speed is in ms, 0 would be instant attack)
+- speed: 3000 / level (as level increases, speed gets smaller and thus faster. Speed is in ms, 0 would be instant attack)
 - attack: level \* 10 (increases with level)
 
 ### Player skills
@@ -83,25 +86,36 @@ steal:
 
 Items have the following properties
 
-- name (string)
+- name (string - Use the rarity name + type. Example for type 'potion' and rarity 0 -> Common potion)
+- type (string - type of item)
 - value (number)
 - rarity (number - refer to the RARITY_LIST variable)
 - use (function - expects a target as parameter to specify on which target to use the item)
 
-2 types of objects to implement:  
+3 types of objects to implement:  
 potion:
 
-- name: 'potion'
+- name: 'Common potion' (if rarity 0)
+- type: 'potion'
 - value: 5
 - rarity: 0
 - use: restores 25hp to the specified target
 
 bomb:
 
-- name: 'bomb'
+- name: 'Common bomb' (if rarity 0)
+- type: 'bomb'
 - value: 7
 - rarity: 0
 - use: deals 50hp damage to the specified target
+
+key:
+
+- name: 'Epic key'
+- type: 'key'
+- value: 150
+- rarity: 3
+- use: Unlocks the door to a dungeon
 
 You can tweak the properties and make more item objects
 
@@ -121,8 +135,8 @@ Monsters have the following properties (parentheses has type and initial value)
 - items (array of objects - may be empty or not depending on parameters)
 - position (object - specified in parameters)
 - type (string - 'monster')
-
-Monsters give exp (experience points) when defeated following this rule: level \* 10; e.g. level is 2 -> 2 \* 10 = 20 exp points
+- getMaxHp (function - a method that returns max hp. Value is level \* 100, e.g. level 2 -> 200 max hp)
+- getExp (function - returns exp received for defeating monster. Value is level \* 10 e.g. level 2 -> 20 exp points received)
 
 ### Tradesman
 
@@ -133,6 +147,7 @@ Tradesman has the following properties (parentheses has type and initial value)
 - items (array of objects - may be empty or not depending on parameters)
 - position (object - specified in parameters)
 - type (string - 'tradesman')
+- getMaxHp (function - a method that returns max hp. For tradesman it's Infinity)
 
 When the player and tradesman have the same position it is possible to buy an item from the tradesman or sell an item. Each item has a value property which is the amount of gold necessary to buy the item. It's also the amount of gold a player receives when selling an item. Higher rarity items should have higher value.
 
@@ -140,6 +155,10 @@ When the player and tradesman have the same position it is possible to buy an it
 
 Dungeon has the following properties (parentheses has type and initial value)
 
+- isLocked (boolean)
+- hasPrincess (boolean)
+- items (array of objects)
+- gold (number)
 - position (object - specified in parameters)
 - type (string - 'dungeon')
 
@@ -159,3 +178,20 @@ When a player and a monster have the same position, each starts to attack indefi
 - Object.values
 
 All the array methods
+
+## Notes
+
+Use the debugger when you're not sure what's going on. You can just write `debugger;` where you think there is a problem and reload the page, it will stop at the debugger.  
+From there you can go line by line and see where the problem is.  
+Helpful resource: https://javascript.info/debugging-chrome
+
+Use timestamps to avoid having the web browser collapsing your console output:  
+Bad
+
+![notimestamps](images/notimestamps.png)
+
+Good
+
+![timestamps](images/timestamps1.png)
+![timestamps](images/timestamps2.png)
+![timestamps](images/timestamps3.png)
