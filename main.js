@@ -266,15 +266,15 @@ function useItem(itemName, target) {
 // Uses a player skill (note: skill is not consumable, it's useable infinitely besides the cooldown wait time)
 // skillName is a string. target is an entity (typically monster).
 // If target is not specified, skill shoud be used on the entity at the same position
-let confuseDisable = false;
-let stealDisable = false;
+let confuseCooldown = 0;
+let stealCooldown = 0;
 
 function useSkill(skillName, target = getEntity()) {
   if (target.type === 'monster' || target.type === 'tradesman') {
     switch (skillName) {
       case 'confuse':
-        if (confuseDisable === true) {
-          print('Skill in cooldown.');
+        if (confuseCooldown !== 0) {
+          print('Skill in cooldown. ' + confuseCooldown + 'ms remaining.');
           return;
         }
         print('Confusing ' + target.name + '...');
@@ -290,15 +290,19 @@ function useSkill(skillName, target = getEntity()) {
         target.hp -= target.attack;
         print(target.name + ' hit! -' + target.attack + 'hp', 'purple');
         print('HP LEFT: ' + target.hp, 'purple');
-        confuseDisable = true;
-        setTimeout(function() {
-          confuseDisable = false;
-        }, 10000);
+        confuseCooldown = 10000;
+        cooldown = setInterval(() => {
+          if (confuseCooldown === 0) {
+            clearInterval(cooldown);
+            return;
+          }
+          confuseCooldown -= 100;
+        }, 100);
         break;
       case 'steal':
         if (player.level >= 3) {
-          if (stealDisable === true) {
-            print('Skill in cooldown.');
+          if (stealCooldown !== 0) {
+            print('Skill in cooldown. ' + stealCooldown + 'ms remaining');
             return;
           }
           const basicItems = target.items.filter(item => item.rarity <= 1);
@@ -306,10 +310,14 @@ function useSkill(skillName, target = getEntity()) {
           target.items = target.items.filter(item => item.rarity > 1);
           print('Succesfully stole items:');
           print(basicItems);
-          stealDisable = true;
-          setTimeout(function() {
-            stealDisable = false;
-          }, 25000);
+          stealCooldown = 25000;
+          cooldown = setInterval(() => {
+            if (stealCooldown === 0) {
+              clearInterval(cooldown);
+              return;
+            }
+            stealCooldown -= 100;
+          }, 100);
         } else {
           print('Your level is too low. Required level 3');
         }
