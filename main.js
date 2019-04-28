@@ -266,10 +266,17 @@ function useItem(itemName, target) {
 // Uses a player skill (note: skill is not consumable, it's useable infinitely besides the cooldown wait time)
 // skillName is a string. target is an entity (typically monster).
 // If target is not specified, skill shoud be used on the entity at the same position
+let confuseDisable = false;
+let stealDisable = false;
+
 function useSkill(skillName, target = getEntity()) {
   if (target.type === 'monster' || target.type === 'tradesman') {
     switch (skillName) {
       case 'confuse':
+        if (confuseDisable === true) {
+          print('Skill in cooldown.');
+          return;
+        }
         print('Confusing ' + target.name + '...');
         target.name = target.name.split('');
         target.name = target.name.reverse();
@@ -283,14 +290,26 @@ function useSkill(skillName, target = getEntity()) {
         target.hp -= target.attack;
         print(target.name + ' hit! -' + target.attack + 'hp', 'purple');
         print('HP LEFT: ' + target.hp, 'purple');
+        confuseDisable = true;
+        setTimeout(function() {
+          confuseDisable = false;
+        }, 10000);
         break;
       case 'steal':
         if (player.level >= 3) {
+          if (stealDisable === true) {
+            print('Skill in cooldown.');
+            return;
+          }
           const basicItems = target.items.filter(item => item.rarity <= 1);
           player.items = player.items.concat(basicItems);
           target.items = target.items.filter(item => item.rarity > 1);
           print('Succesfully stole items:');
           print(basicItems);
+          stealDisable = true;
+          setTimeout(function() {
+            stealDisable = false;
+          }, 25000);
         } else {
           print('Your level is too low. Required level 3');
         }
